@@ -1,0 +1,45 @@
+# Git
+.git/
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.pytest_cache/
+.env
+.venv/
+venv/
+ENV/
+env/
+*.egg-info/
+*.egg
+
+# IDE and development files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Project-specific
+cron-logs/*
+screenshots/*
+!screenshots/.gitkeep
+!cron-logs/.gitkeep
+*.md
+tests/
+.github/
+docker-compose*.yml
+stack.env
+*.egg-info
+
+# Avoid copying any existing Docker artifacts
+Dockerfile*
+.dockerignore
+
+# Don't need these in the image
+.env.template

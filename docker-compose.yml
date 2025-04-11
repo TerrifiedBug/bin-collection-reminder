@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  bin-collection-reminder:
+    image: terrifiedbug/bin-collection-reminder:latest
+    container_name: bin-collection-reminder
+    env_file:
+      - .env
+    restart: unless-stopped
