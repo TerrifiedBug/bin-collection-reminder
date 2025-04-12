@@ -110,7 +110,7 @@ def send_notifications(collection: Dict[str, str]) -> None:
     Args:
         collection: Dictionary containing bin collection information
     """
-    message = f"Reminder: {collection['day']} is {collection['type']}"
+    message = f"Reminder: {collection['day']} - {collection['type']}"
 
     # Discord notifications
     if os.getenv("DISCORD_ENABLED", "false").lower() == "true":
