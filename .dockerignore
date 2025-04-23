@@ -34,7 +34,7 @@ screenshots/*
 tests/
 .github/
 docker-compose*.yml
-stack.env
+.env
 *.egg-info
 
 # Avoid copying any existing Docker artifacts

@@ -49,10 +49,12 @@ def get_bin_collection(uprn: str) -> Dict[str, str]:
         )
         response.raise_for_status()  # Raise exception for HTTP errors
 
-        # Extract bin day using regex
+        # Extract bin day using
         bin_day_match = re.search(
-            r'<div class="binextra">(?P<binday>.*?) -<br', response.text
+            r'<div class="binextra">(?:.*?<br>)?(?P<binday>[^-]+?)(?:\s*-\s*)',
+            response.text,
         )
+
         bin_day = bin_day_match.group("binday") if bin_day_match else "Unknown"
 
         # Extract bin type using regex

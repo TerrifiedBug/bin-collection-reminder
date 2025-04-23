@@ -34,7 +34,7 @@ cron-logs/*
 !cron-logs/.gitkeep
 screenshots/*
 !screenshots/.gitkeep
-stack.env
+.env
 docker-compose-local.yml
 
 # Logs
