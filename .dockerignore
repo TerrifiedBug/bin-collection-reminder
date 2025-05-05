@@ -32,6 +32,7 @@ screenshots/*
 !cron-logs/.gitkeep
 *.md
 .github/
+tests/
 docker-compose*.yml
 .env
 *.egg-info
