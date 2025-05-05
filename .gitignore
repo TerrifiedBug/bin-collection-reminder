@@ -35,7 +35,8 @@ cron-logs/*
 screenshots/*
 !screenshots/.gitkeep
 .env
-docker-compose-local.yml
+docker-compose-dev.yml
+scripts/debug_binday.py
 
 # Logs
 *.log
