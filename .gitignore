@@ -36,7 +36,8 @@ screenshots/*
 !screenshots/.gitkeep
 .env
 docker-compose-dev.yml
-scripts/debug_binday.py
+scripts/test_regex.py
+CLAUDE.md
 
 # Logs
 *.log

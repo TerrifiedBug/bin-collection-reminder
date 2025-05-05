@@ -20,7 +20,7 @@ def get_bin_collection(uprn: str) -> Dict[str, str]:
         uprn: Unique Property Reference Number
 
     Returns:
-        Dictionary containing the bin collection day and type
+        Dictionary containing the bin collection day, type, and special message if present
     """
     if not uprn:
         raise ValueError("UPRN cannot be empty")
@@ -49,13 +49,24 @@ def get_bin_collection(uprn: str) -> Dict[str, str]:
         )
         response.raise_for_status()  # Raise exception for HTTP errors
 
-        # Extract bin day using
-        bin_day_match = re.search(
-            r'<div class="binextra">(?:.*?<br>)?(?P<binday>[^-]+?)(?:\s*-\s*)',
+        # Extract special message if it exists
+        special_message = None
+        special_day_match = re.search(
+            r'<div class="binextra"><strong>(?P<special_msg>.*?)</strong><br>(?P<binday>[^<-]+?)(?:\s*-\s*)',
             response.text,
         )
 
-        bin_day = bin_day_match.group("binday") if bin_day_match else "Unknown"
+        # If special day pattern matched, extract both the special message and bin day
+        if special_day_match:
+            special_message = special_day_match.group("special_msg")
+            bin_day = special_day_match.group("binday").strip()
+        else:
+            # Fall back to regular bin day pattern
+            regular_day_match = re.search(
+                r'<div class="binextra">(?P<binday>[^<-]+?)(?:\s*-\s*)',
+                response.text,
+            )
+            bin_day = regular_day_match.group("binday").strip() if regular_day_match else "Unknown"
 
         # Extract bin type using regex
         bin_type_match = re.search(
@@ -63,7 +74,11 @@ def get_bin_collection(uprn: str) -> Dict[str, str]:
         )
         bin_type = bin_type_match.group("bintype") if bin_type_match else "Unknown"
 
-        return {"day": bin_day, "type": bin_type}
+        result = {"day": bin_day, "type": bin_type}
+        if special_message:
+            result["special_message"] = special_message
+            
+        return result
 
     except requests.RequestException as error:
         print(f"[!] Error fetching bin collection data: {error}")
