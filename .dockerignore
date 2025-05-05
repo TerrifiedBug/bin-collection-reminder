@@ -31,11 +31,13 @@ screenshots/*
 !screenshots/.gitkeep
 !cron-logs/.gitkeep
 *.md
-tests/
 .github/
+tests/
 docker-compose*.yml
 .env
 *.egg-info
+CLAUDE.md
+
 
 # Avoid copying any existing Docker artifacts
 Dockerfile*
