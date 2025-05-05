@@ -3,11 +3,11 @@ Module for retrieving bin collection information from Vale of White Horse Counci
 """
 
 import os
-import re
 import sys
 from typing import Dict
 
 import requests
+from bs4 import BeautifulSoup
 
 from scripts.notifications import send_notifications
 
@@ -49,35 +49,44 @@ def get_bin_collection(uprn: str) -> Dict[str, str]:
         )
         response.raise_for_status()  # Raise exception for HTTP errors
 
+        # Parse the HTML with BeautifulSoup
+        soup = BeautifulSoup(response.text, "lxml")
+
         # Extract special message if it exists
         special_message = None
-        special_day_match = re.search(
-            r'<div class="binextra"><strong>(?P<special_msg>.*?)</strong><br>(?P<binday>[^<-]+?)(?:\s*-\s*)',
-            response.text,
-        )
+        bin_day = "Unknown"
+        bin_type = "Unknown"
 
-        # If special day pattern matched, extract both the special message and bin day
-        if special_day_match:
-            special_message = special_day_match.group("special_msg")
-            bin_day = special_day_match.group("binday").strip()
-        else:
-            # Fall back to regular bin day pattern
-            regular_day_match = re.search(
-                r'<div class="binextra">(?P<binday>[^<-]+?)(?:\s*-\s*)',
-                response.text,
-            )
-            bin_day = regular_day_match.group("binday").strip() if regular_day_match else "Unknown"
+        # Find the bin extra div which contains the collection day
+        bin_extra_div = soup.find("div", class_="binextra")
+        if bin_extra_div:
+            # Check if there's a special message (inside a strong tag)
+            strong_tag = bin_extra_div.find("strong")
+            if strong_tag:
+                special_message = strong_tag.text.strip()
+                # The bin day is the text after the <br> tag
+                br_tag = strong_tag.find_next("br")
+                if br_tag and br_tag.next_sibling:
+                    bin_day_text = br_tag.next_sibling.strip()
+                    # Remove anything after a hyphen if present
+                    bin_day = bin_day_text.split("-")[0].strip()
+            else:
+                # Regular bin day (no special message)
+                bin_day_text = bin_extra_div.text.strip()
+                # Remove anything after a hyphen if present
+                bin_day = bin_day_text.split("-")[0].strip()
 
-        # Extract bin type using regex
-        bin_type_match = re.search(
-            r'<div class="bintxt"><h2>(?P<bintype>.*?)</h2></div>', response.text
-        )
-        bin_type = bin_type_match.group("bintype") if bin_type_match else "Unknown"
+        # Find the bin type in the h2 tag inside the bintxt div
+        bin_txt_div = soup.find("div", class_="bintxt")
+        if bin_txt_div:
+            h2_tag = bin_txt_div.find("h2")
+            if h2_tag:
+                bin_type = h2_tag.text.strip()
 
         result = {"day": bin_day, "type": bin_type}
         if special_message:
             result["special_message"] = special_message
-            
+
         return result
 
     except requests.RequestException as error:
