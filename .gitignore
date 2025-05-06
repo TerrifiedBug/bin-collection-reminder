@@ -37,7 +37,6 @@ screenshots/*
 .env
 docker-compose-dev.yml
 scripts/test_regex.py
-CLAUDE.md
 tests/
 .dockerignore
 
