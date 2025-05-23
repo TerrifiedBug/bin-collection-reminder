@@ -39,6 +39,6 @@ docker-compose-dev.yml
 scripts/test_regex.py
 tests/
 .dockerignore
-
+CODE_REVIEW.md
 # Logs
 *.log
