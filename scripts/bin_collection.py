@@ -64,17 +64,25 @@ def get_bin_collection(uprn: str) -> Dict[str, str]:
             strong_tag = bin_extra_div.find("strong")
             if strong_tag:
                 special_message = strong_tag.text.strip()
-                # The bin day is the text after the <br> tag
-                br_tag = strong_tag.find_next("br")
-                if br_tag and br_tag.next_sibling:
-                    bin_day_text = br_tag.next_sibling.strip()
-                    # Remove anything after a hyphen if present
-                    bin_day = bin_day_text.split("-")[0].strip()
+
+                # Get all text content and split by lines to find the day
+                all_text = bin_extra_div.get_text(separator="\n", strip=True)
+                lines = [line.strip() for line in all_text.split("\n") if line.strip()]
+
+                # Find the line that contains the day (usually after the special message)
+                for line in lines:
+                    if line != special_message and "-" in line:
+                        # Extract day part (before the hyphen)
+                        bin_day = line.split("-")[0].strip()
+                        break
             else:
                 # Regular bin day (no special message)
-                bin_day_text = bin_extra_div.text.strip()
-                # Remove anything after a hyphen if present
-                bin_day = bin_day_text.split("-")[0].strip()
+                # Get clean text and extract day part
+                all_text = bin_extra_div.get_text(strip=True)
+                if "-" in all_text:
+                    bin_day = all_text.split("-")[0].strip()
+                else:
+                    bin_day = all_text.strip()
 
         # Find the bin type in the h2 tag inside the bintxt div
         bin_txt_div = soup.find("div", class_="bintxt")
