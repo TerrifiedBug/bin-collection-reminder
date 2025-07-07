@@ -5,7 +5,7 @@ set -e
 CRON_SCHEDULE=${CRON_SCHEDULE:-"0 18 * * 1"}
 
 # Create the cron job
-echo "$CRON_SCHEDULE python3 -m scripts.bin_collection >> /var/log/cron.log 2>&1" > /etc/cron.d/bincollection
+echo "$CRON_SCHEDULE cd /app && python3 -m scripts.bin_collection >> /var/log/cron.log 2>&1" > /etc/cron.d/bincollection
 chmod 0644 /etc/cron.d/bincollection
 
 # Apply cron job
